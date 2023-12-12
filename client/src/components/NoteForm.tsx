@@ -8,6 +8,7 @@ function NoteForm() {
 	});
 
 	const addNote = trpc.note.create.useMutation();
+	const utils = trpc.useContext();
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -15,6 +16,7 @@ function NoteForm() {
 		addNote.mutate(note, {
 			onSuccess: () => {
 				console.log("Note added succefully");
+				utils.note.get.invalidate();
 			},
 		});
 	};
