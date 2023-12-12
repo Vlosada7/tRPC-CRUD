@@ -33,10 +33,28 @@ const deleteNote = publicProcedure
 		if (!noteFound) throw new Error("Note not found");
 		return true;
 	});
+
+const toggleDone = publicProcedure
+	.input(z.string())
+	.mutation(async ({ input }) => {
+		try {
+			const foundNote = await Note.findById(input);
+			if (!foundNote) throw new Error("Note not found");
+
+			foundNote.done = !foundNote.done;
+			await foundNote.save();
+			return true;
+		} catch (error) {
+			console.log(error);
+			return false;
+		}
+	});
+
 // Rotas que o frontend pode acessar
 export const notesRouter = router({
 	// Metodos que o frontend pode acessar e chamar a funcao para realizar o que deseja
 	create: createNote,
 	get: getNotes,
 	delete: deleteNote,
+	toggleDone,
 });
