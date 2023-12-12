@@ -1,14 +1,10 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
+import Note from "../models/note";
 
-export const getNotes = publicProcedure.query(() => {
-	return [
-		{
-			id: 1,
-			title: "Note 1",
-			content: "Content 1",
-		},
-	];
+export const getNotes = publicProcedure.query(async () => {
+	const notes = await Note.find();
+	return notes;
 });
 
 const createNote = publicProcedure
@@ -19,10 +15,15 @@ const createNote = publicProcedure
 			description: z.string(),
 		})
 	)
-	.mutation(({ input }) => {
+	.mutation(async ({ input }) => {
 		// Aqui aconteceria o salvamento no meu banco de dados
-		console.log(input);
-		return "received";
+		const newNote = new Note({
+			title: input.title,
+			description: input.description,
+		});
+
+		const savedNote = await newNote.save();
+		return `New note storage. New note: ${savedNote}`;
 	});
 
 // Rotas que o frontend pode acessar
