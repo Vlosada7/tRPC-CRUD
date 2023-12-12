@@ -26,9 +26,17 @@ const createNote = publicProcedure
 		return `New note storage. New note: ${savedNote}`;
 	});
 
+const deleteNote = publicProcedure
+	.input(z.string())
+	.mutation(async ({ input }) => {
+		const noteFound = await Note.findByIdAndDelete(input);
+		if (!noteFound) throw new Error("Note not found");
+		return true;
+	});
 // Rotas que o frontend pode acessar
 export const notesRouter = router({
 	// Metodos que o frontend pode acessar e chamar a funcao para realizar o que deseja
 	create: createNote,
 	get: getNotes,
+	delete: deleteNote,
 });
